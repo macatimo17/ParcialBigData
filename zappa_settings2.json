@@ -8,6 +8,6 @@
         "apigateway_enabled": false,
         "project_name": "pythonProject",
         "runtime": "python3.9",
-        "s3_bucket": "dolarprocessed01"
+        "s3_bucket": "bigdata1"
     }
 }
