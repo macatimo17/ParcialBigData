@@ -1,8 +1,9 @@
 import csv
 import boto3
 import pandas as pd
-#Bryan Garavito
+
 #Creacion de la funcion que hace la conversion del archivo txt a cvs
+
 def lambda_handler2(event, context):
     s3 = boto3.resource('s3')
     out = open('dolar-timestamp.csv', 'w', newline='')
