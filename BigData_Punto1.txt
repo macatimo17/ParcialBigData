@@ -1,0 +1,58 @@
+---------------------------------------------------------------------------------------------------------------------------------------------
+Parte 1 || Archivo .txt
+---------------------------------------------------------------------------------------------------------------------------------------------
+import json
+import boto3
+import datetime
+import urllib3
+
+def lambda_handler(event, context):
+    # TODO implement
+    
+    now = datetime.datetime.now()
+    time = now.strftime('%d %m %Y')
+    
+    http = urllib3.PoolManager()
+    resp = http.request('GET', 'https://totoro.banrep.gov.co/estadisticas-economicas/rest/consultaDatosService/consultaMercadoCambiario')
+    print(resp.data.decode('utf-8'))
+    
+    client = boto3.client("s3","us-east-1")
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket('dolarraw2628')
+    client.put_object(Body=resp.data.decode('utf-8'), Bucket='dolarraw2628', Key ='dolar '+ time + '.txt')
+    
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Funcionó')
+    }
+---------------------------------------------------------------------------------------------------------------------------------------------
+Parte 2 || Archivo .csv
+---------------------------------------------------------------------------------------------------------------------------------------------
+import json
+import boto3
+import datetime
+import csv
+
+def lambda_handler(event, context):
+    # TODO implement
+    
+    now = datetime.datetime.now()
+    time = now.strftime('%d %m %Y')
+    
+    s3 = boto3.resource('s3')
+    s3.Bucket('dolarraw2628').download_file('dolar '+ time + '.txt', '/tmp/dolar.csv')
+    
+    #No funcionó el modulo pandas así que se borró de los import
+    #sitios = pd.read_csv('dolar '+ x2 + '.txt',header = None)
+    #sitios.columns = ['FechaHora', 'Valor'] 
+    #sitios.to_csv('dolar_processed_ '+ x2 + '.csv', index = None) 
+    
+    client= boto3.client("s3","us-east-1")
+    s3= boto3.resource('s3')
+    bucket = s3.Bucket('dolarprocessed2628')
+    client.put_object(Body='dolar '+ time + '.txt', Bucket='dolarprocessed2628', Key ='dolar_processed_'+ time + '.csv')
+    
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Funcionó')
+    }
